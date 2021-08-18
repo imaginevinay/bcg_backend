@@ -8,6 +8,8 @@ const { urlencoded, json } = require('express');
 const morgan = require('morgan');
 const baseRoute = require('./routes/index');
 const policyRoute = require('./routes/policies');
+const customerRoute = require('./routes/customer');
+
 
 mongoose.connect(process.env.DB_URL, { useNewUrlParser : true, useUnifiedTopology: true })
 
@@ -20,7 +22,7 @@ app.use(morgan('dev'));
 app.use(urlencoded({ extended: false }));
 app.use(json());
 
-//TODO: Add CORS path
+// CORS ISSUE FIX
 app.use((req, res, _next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
@@ -33,5 +35,6 @@ app.use((req, res, _next) => {
 
 app.use('/', baseRoute);
 app.use('/policy', policyRoute);
+app.use('/customer', customerRoute);
 
 app.listen(process.env.PORT || 3000);
