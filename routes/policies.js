@@ -1,37 +1,55 @@
 const express = require('express');
 const router = express.Router();
-const Policies = require('../models/policy'); 
+const Policies = require('../models/policy');
+const { getSegregated } = require('../shared/data-formatte')
 
 // get all policies
-router.get('/', (req,res) => {
-    Policies.find().exec().then(doc => {
-            console.log(doc);
-            res.status(200).send(doc);
-        }).catch(err => {
-            console.log(err);
-            res.status(500).send({ error: err })
-        })
+router.get('/', (req, res) => {
+    Policies.find().exec().then(data => {
+        res.status(200).send(data);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send({ error: err })
+    })
+})
+
+//get all policies by region
+router.get('/region/:region', (req, res) => {
+    const region = req.params.region;
+    Policies.find({ "Customer_Region": region }).exec().then(data => {
+        data = getSegregated(data);
+        res.status(200).send(data);
+    }).catch(err => {
+        console.log(err);
+        res.status(500).send({ error: err })
+    })
 })
 
 //get one policy by policyID
-router.get('/:policyID', (req, res) => {
-    const _id = req.params.policyID.toString();
-    Policies.findOne({ "_id": _id }).exec().then(doc => {
-            res.status(200).send(doc);
-        }).catch(err => {
-            console.log('err', err);
-            res.status(500).send({ error: err })
-        })
+router.get('/:policyID?/:custID?', (req, res) => {
+    const pol_id = req.params && req.params.policyID;
+    const cust_id = req.params && req.params.custID;
+    let filter = {};
+    pol_id && (filter['Policy_id'] = pol_id)
+    cust_id && (filter['Customer_id'] = cust_id)
+    Policies.findOne(filter).exec().then(data => {
+        data = data ? [data] : [];
+        res.status(200).send(data);
+    }).catch(err => {
+        console.log('err', err);
+        res.status(500).send({ error: err })
+    })
 })
 
 // update policy data by id
-router.patch('/:policyID', (req, res) => {
+router.patch('/update/:policyID', (req, res) => {
     const _id = req.params.policyID;
     Policies.findByIdAndUpdate({ "_id": _id }, { $set: req.body }, { runValidators: true, context: 'query', new: true }).exec().then(result => {
-            res.status(200).send(result)
-        }).catch(err => {
-            res.status(500).send({ error: err })
-        });
+        res.status(200).send(result)
+    }).catch(err => {
+        console.log('err', err);
+        res.status(500).send({ error: err })
+    });
 
 });
 
@@ -48,7 +66,7 @@ router.delete('/:policyID', (req, res) => {
 
 
 
-router.post('/create', (req,res) => {
+router.post('/create', (req, res) => {
     Policies.insertOne(req.body).exec().then(data => {
         console.log(data);
         res.status(200).send(data);
