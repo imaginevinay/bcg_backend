@@ -7,6 +7,7 @@ const Policies = require('../models/policy');
 router.get('/:customerID', (req, res) => {
     const cust_id = req.params.customerID.toString();
     Policies.findOne({ "Customer_id": cust_id }).exec().then(data => {
+        data = data ? [data] : [];
         res.status(200).send(data);
     }).catch(err => {
         console.log('err', err);
