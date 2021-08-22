@@ -1,4 +1,5 @@
 if (process.env.NODE_ENV !== 'production') {
+    // for local setup of env
     require('dotenv').config({ path: '.env' })
 }
 const express = require('express');

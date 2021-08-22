@@ -3,7 +3,7 @@ const router = express.Router();
 const Policies = require('../models/policy');
 
 
-//get one policy by policyID
+//get one policy by customer ID
 router.get('/:customerID', (req, res) => {
     const cust_id = req.params.customerID.toString();
     Policies.findOne({ "Customer_id": cust_id }).exec().then(data => {

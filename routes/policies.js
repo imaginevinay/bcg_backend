@@ -25,7 +25,7 @@ router.get('/region/:region', (req, res) => {
     })
 })
 
-//get one policy by policyID
+//get one policy by policyID or customer id
 router.get('/:policyID?/:custID?', (req, res) => {
     const pol_id = req.params && req.params.policyID;
     const cust_id = req.params && req.params.custID;
@@ -54,8 +54,7 @@ router.patch('/update/:policyID', (req, res) => {
 });
 
 
-//delete policy data by id
-
+//delete policy data by id (not used on frontend)
 router.delete('/:policyID', (req, res) => {
     const id = req.params.policyID;
     res.status(200).send({
@@ -65,10 +64,9 @@ router.delete('/:policyID', (req, res) => {
 });
 
 
-
+// create policy data (not used on frontend)
 router.post('/create', (req, res) => {
     Policies.insertOne(req.body).exec().then(data => {
-        console.log(data);
         res.status(200).send(data);
     }).catch(err => {
         res.status(500).send({ error: err })
